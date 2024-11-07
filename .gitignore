@@ -1,0 +1,8 @@
+.python-version
+secret.json
+*.env
+.git/
+.venv/
+.idea/
+__pycache__/
+poetry.lock

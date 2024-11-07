@@ -1,0 +1,74 @@
+name: Django Mini Project CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  EMAIL_USER: ${{ secrets.EMAIL_USER }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: django
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Set timezone to KST
+      run: |
+        sudo rm /etc/localtime
+        sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        poetry install
+
+    - name: Run isort (Import sorting)
+      run: |
+        poetry run isort . --check --diff
+
+    - name: Run black (Code formatting)
+      run: |
+        poetry run black . --check
+
+    - name: Wait for PostgreSQL
+      run: |
+        poetry run python manage.py wait_for_db
+
+    - name: Run Django Migration
+      run: |
+        poetry run python manage.py makemigrations
+        poetry run python manage.py migrate
+
+    - name: Run Django tests
+      run: |
+        poetry run python manage.py test
