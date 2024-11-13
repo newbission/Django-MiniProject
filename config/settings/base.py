@@ -6,21 +6,28 @@ from pathlib import Path
 
 from celery.schedules import crontab
 
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# 환경변수 가져오기
-try:
-    with open(BASE_DIR / "secret.json") as f:
-        config_secret_str = f.read()
-    SECRET = json.loads(config_secret_str)
-# CI 용
-except FileNotFoundError:
-    SECRET = {
-        "DJANGO_SECRET_KEY": "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)),
-        "POSTGRES": {"HOST": "localhost", "USER": "postgres", "PASSWORD": "postgres", "NAME": "django", "PORT": 5432},
-    }
+load_dotenv()
 
-SECRET_KEY = SECRET["DJANGO_SECRET_KEY"]
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)))
+ROOT_URLCONF = "config.urls"
+
+# # 환경변수 가져오기
+# try:
+#     with open(BASE_DIR / "secret.json") as f:
+#         config_secret_str = f.read()
+#     SECRET = json.loads(config_secret_str)
+# # CI 용
+# except FileNotFoundError:
+#     SECRET = {
+#         "DJANGO_SECRET_KEY": "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()?", k=50)),
+#         "POSTGRES": {"HOST": "localhost", "USER": "postgres", "PASSWORD": "postgres", "NAME": "django", "PORT": 5432},
+#     }
+
+# SECRET_KEY = SECRET["DJANGO_SECRET_KEY"]
 
 # Application definition
 # installed app
@@ -119,29 +126,29 @@ SIMPLE_JWT = {
 }
 
 # oauth
-if SECRET.get("KAKAO"):
-    KAKAO_CLIENT_ID = SECRET["KAKAO"]["CLIENT_ID"]
-    KAKAO_CLIENT_SECRET = SECRET["KAKAO"]["CLIENT_SECRET"]
-else:
-    KAKAO_CLIENT_ID = os.environ.get("KAKAO_CLIENT_ID")
-    KAKAO_CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET")
-KAKAO_CALLBACK_URL = "/users/oauth/kakao/callback/"
+# if SECRET.get("KAKAO"):
+#     KAKAO_CLIENT_ID = SECRET["KAKAO"]["CLIENT_ID"]
+#     KAKAO_CLIENT_SECRET = SECRET["KAKAO"]["CLIENT_SECRET"]
+# else:
+#     KAKAO_CLIENT_ID = os.environ.get("KAKAO_CLIENT_ID")
+#     KAKAO_CLIENT_SECRET = os.environ.get("KAKAO_CLIENT_SECRET")
+# KAKAO_CALLBACK_URL = "/users/oauth/kakao/callback/"
 
-if SECRET.get("GOOGLE"):
-    GOOGLE_CLIENT_ID = SECRET["GOOGLE"]["CLIENT_ID"]
-    GOOGLE_CLIENT_SECRET = SECRET["GOOGLE"]["CLIENT_SECRET"]
-else:
-    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
-GOOGLE_CALLBACK_URL = "/users/oauth/google/callback/"
+# if SECRET.get("GOOGLE"):
+#     GOOGLE_CLIENT_ID = SECRET["GOOGLE"]["CLIENT_ID"]
+#     GOOGLE_CLIENT_SECRET = SECRET["GOOGLE"]["CLIENT_SECRET"]
+# else:
+#     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+#     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+# GOOGLE_CALLBACK_URL = "/users/oauth/google/callback/"
 
-if SECRET.get("NAVER"):
-    NAVER_CLIENT_ID = SECRET["NAVER"]["CLIENT_ID"]
-    NAVER_CLIENT_SECRET = SECRET["NAVER"]["CLIENT_SECRET"]
-else:
-    NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID")
-    NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET")
-NAVER_CALLBACK_URL = "/users/oauth/naver/callback/"
+# if SECRET.get("NAVER"):
+#     NAVER_CLIENT_ID = SECRET["NAVER"]["CLIENT_ID"]
+#     NAVER_CLIENT_SECRET = SECRET["NAVER"]["CLIENT_SECRET"]
+# else:
+#     NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID")
+#     NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET")
+# NAVER_CALLBACK_URL = "/users/oauth/naver/callback/"
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {
@@ -153,17 +160,17 @@ REST_FRAMEWORK = {
 }
 
 # EMAIL
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.naver.com"
-EMAIL_PORT = 587
-if SECRET.get("EMAIL"):
-    EMAIL_HOST_USER = SECRET["EMAIL"]["USER"]
-    EMAIL_HOST_PASSWORD = SECRET["EMAIL"]["PASSWORD"]
-else:
-    EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.naver.com"
+# EMAIL_PORT = 587
+# if SECRET.get("EMAIL"):
+#     EMAIL_HOST_USER = SECRET["EMAIL"]["USER"]
+#     EMAIL_HOST_PASSWORD = SECRET["EMAIL"]["PASSWORD"]
+# else:
+#     EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+#     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Celery 설정
 CELERY_BROKER_URL = "redis://localhost:6379/0"  # 데이터베이스를 브로커로 사용

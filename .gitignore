@@ -6,3 +6,4 @@ secret.json
 .idea/
 __pycache__/
 poetry.lock
+.vscode

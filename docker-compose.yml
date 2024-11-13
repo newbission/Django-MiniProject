@@ -1,0 +1,9 @@
+services:
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env  # .env 파일을 컨테이너에 전달
+    ports:
+      - "8000:8000"

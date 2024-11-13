@@ -22,12 +22,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": SECRET["POSTGRES"]["HOST"],
-        "USER": SECRET["POSTGRES"]["USER"],
-        "PASSWORD": SECRET["POSTGRES"]["PASSWORD"],
-        "NAME": SECRET["POSTGRES"]["NAME"],
-        "PORT": 5432,
+        "ENGINE": "django.db.backends.postgressql",
+        "HOST": os.getenv("DB_PORT", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
+        "NAME": os.getenv("DB_NAME", "django"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
     }
 }
 CELERY_BEAT_SCHEDULE = {

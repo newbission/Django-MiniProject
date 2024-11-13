@@ -39,10 +39,10 @@ class SignupView(CreateAPIView):
         self.verify_link = self.request.build_absolute_uri(f"/users/verify/?code={signer_dump}")
         subject = f"[Finance Manager]{user.email}님의 이메일 인증 링크입니다."
         message = f"""
-                    아래의 링크를 클릭하여 이메일 인증을 완료해주세요.\n\n
-                    {self.verify_link}
-                    """
-        send_mail(subject=subject, message=message, from_email=None, recipient_list=(user.email,))
+                아래의 링크를 클릭하여 이메일 인증을 완료해주세요.\n\n
+                {self.verify_link}
+                """
+        # send_mail(subject=subject, message=message, from_email=None, recipient_list=(user.email,))
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -71,12 +71,14 @@ class JWTLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        print("hi")
         email = request.data.get("email")
         password = request.data.get("password")
         serializer = LoginSerializer(data={"email": email, "password": password})
 
         if serializer.is_valid():
-            user = authenticate(request, email=serializer.data["email"], password=serializer.data["password"])
+            print(serializer.data["email"], serializer.data["password"])
+            user = authenticate(email=serializer.data["email"], password=serializer.data["password"])
             if user is None:
                 return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             refresh = RefreshToken.for_user(user)
