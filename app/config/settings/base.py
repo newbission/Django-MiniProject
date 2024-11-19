@@ -8,7 +8,7 @@ from celery.schedules import crontab
 
 from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 load_dotenv()
 
